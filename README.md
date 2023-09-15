@@ -66,7 +66,9 @@ Build:
 
   Run:
 
+    mpirun -np <procs> ./mpiBench > output.txt
     srun -n <procs> ./mpiBench > output.txt
+
 
   Analyze:
 
@@ -124,22 +126,28 @@ compile-time options that you should be aware of:
 
 ## mpiBench
 
+`mpirun` is the local mpi run, `srun` is the slurm submit run.
+
 Run the default set of tests:
 
+    mpirun -np 2 -ppdebug mpiBench
     srun -n2 -ppdebug mpiBench
 
 Run the default message size range and iteration count for Alltoall, Allreduce, and Barrier:
 
+    mpirun -np 2 -ppdebug mpiBench Alltoall Allreduce Barrier
     srun -n2 -ppdebug mpiBench Alltoall Allreduce Barrier
 
 Run from 32-256 bytes and time across 100 iterations of Alltoall:
 
+    mpirun -np 2 -ppdebug mpiBench -b 32 -e 256 -i 100 Alltoall
     srun -n2 -ppdebug mpiBench -b 32 -e 256 -i 100 Alltoall
 
 Run from 0-2K bytes and default iteration count for Gather, but
 reduce the iteration count, as necessary, so each message size
 test finishes within 100,000 usecs:
 
+    mpirun -np 2 -ppdebug mpiBench -e 2K -t 100000 Gather
     srun -n2 -ppdebug mpiBench -e 2K -t 100000 Gather
 
 ## crunch_mpiBench
@@ -159,6 +167,48 @@ Display effective bandwidth for Allgather and Alltoall:
 Compare times in output files in dir1 with those in dir2:
 
     crunch_mpiBench -data DIR1_DATA dir1/* -data DIR2_DATA dir2/*
+
+# Bench Record
+
+## Test1 - 1 nodes, 4 procs (Intel(R) Xeon(R) Platinum 8336C CPU @ 2.30GHz)
+
+    mpirun -np 4 --allow-run-as-root ./mpiBench -ppdebug mpiBench -b 32 -e 256 -i 1000 Alltoall
+
+Result:
+
+    START mpiBench v1.5
+    0 : n8344l-master
+    1 : n8344l-master
+    2 : n8344l-master
+    3 : n8344l-master
+    Alltoall                Bytes:        32        Iters:     1000 Avg:      1.9990        Min:      1.9983        Max:      2.0004        Comm: MPI_COMM_WORLD    Ranks: 4
+    Alltoall                Bytes:        64        Iters:     1000 Avg:      3.1826        Min:      3.1823        Max:      3.1828        Comm: MPI_COMM_WORLD    Ranks: 4
+    Alltoall                Bytes:       128        Iters:     1000 Avg:      3.0845        Min:      3.0843        Max:      3.0847        Comm: MPI_COMM_WORLD    Ranks: 4
+    Alltoall                Bytes:       256        Iters:     1000 Avg:      2.4698        Min:      2.4696        Max:      2.4700        Comm: MPI_COMM_WORLD    Ranks: 4
+    Message buffers (KB):   3
+    END mpiBench
+
+## Test2 - 1 nodes, 8 procs (Intel(R) Xeon(R) Platinum 8336C CPU @ 2.30GHz)
+
+    mpirun -np 8 --allow-run-as-root ./mpiBench -ppdebug mpiBench -b 32 -e 256 -i 1000 Alltoall
+
+Result:
+
+    START mpiBench v1.5
+    0 : n8344l-master
+    1 : n8344l-master
+    2 : n8344l-master
+    3 : n8344l-master
+    4 : n8344l-master
+    5 : n8344l-master
+    6 : n8344l-master
+    7 : n8344l-master
+    Alltoall                Bytes:        32        Iters:     1000 Avg:      5.4092        Min:      5.3897        Max:      5.4191        Comm: MPI_COMM_WORLD    Ranks: 8
+    Alltoall                Bytes:        64        Iters:     1000 Avg:      6.1206        Min:      6.1201        Max:      6.1211        Comm: MPI_COMM_WORLD    Ranks: 8
+    Alltoall                Bytes:       128        Iters:     1000 Avg:      5.7016        Min:      5.7010        Max:      5.7023        Comm: MPI_COMM_WORLD    Ranks: 8
+    Alltoall                Bytes:       256        Iters:     1000 Avg:      6.0434        Min:      6.0429        Max:      6.0438        Comm: MPI_COMM_WORLD    Ranks: 8
+    Message buffers (KB):   6
+    END mpiBench
 
 # Additional Notes
 
